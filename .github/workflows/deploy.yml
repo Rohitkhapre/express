@@ -1,0 +1,21 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: <your-AWS-region>
+      ECR_REPOSITORY: <your-ECR-repository-URI>
+      ECS_CLUSTER: <your-ECS-cluster-name>
+      ECS_SERVICE: <your-ECS-service-name>
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses
