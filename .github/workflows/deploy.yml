@@ -3,7 +3,7 @@ name: Deploy to AWS ECS
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-and-deploy:
@@ -18,4 +18,42 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
-        uses
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker image
+        id: build-image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Push Docker image to Amazon ECR
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy@v1
+        with:
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          image: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          wait-for-service-stability: true
+          max-definitions-per-deployment: 1
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          ECS_DEPLOYMENT_TIMEOUT: '20' # optional
