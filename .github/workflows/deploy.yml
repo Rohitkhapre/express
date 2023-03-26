@@ -9,10 +9,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: <your-AWS-region>
-      ECR_REPOSITORY: <your-ECR-repository-URI>
-      ECS_CLUSTER: <your-ECS-cluster-name>
-      ECS_SERVICE: <your-ECS-service-name>
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: 624796904417.dkr.ecr.us-east-1.amazonaws.com/express-app-repository
+      ECS_CLUSTER: express-app-cluster
+      ECS_SERVICE: express-app-service
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
