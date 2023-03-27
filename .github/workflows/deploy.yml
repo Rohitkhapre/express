@@ -47,7 +47,7 @@ jobs:
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
 
       - name: Deploy to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy@v1
+        uses: aws-actions/express@v1
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE }}
